@@ -7,23 +7,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "transactions")
 public class TransactionDetails {
 	
-		@Id
+	  @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private Long id;
 	     
 	   @Column(name = "userid",  length = 20)
 	    private int userid;
 	   
-	   @Column(name = "accountnumber",  length = 20)
-	    private int accountnumber;
+	   @Column(name = "senderaccountnumber",  length = 20)
+	    private int senderaccountnumber;
 	   
-	   @Column(name = "receiveraccount",  length = 20)
-	    private int receiveraccount;
+	   @Column(name = "receiveraccountnumber",  length = 20)
+	    private int receiveraccountnumber;
 	   
 	   @Column(name = "amount",  length = 20)
 	    private int amount;
@@ -34,28 +33,11 @@ public class TransactionDetails {
 	    @Column(name = "time",  length = 220)
 	    private String time;
 
-//		public TransactionDetails(int userid, int accountnumber, int receiveraccount, int balance, String details,
-//				String time) {
-//			super();
-//			this.userid = userid;
-//			this.accountnumber = accountnumber;
-//			this.receiveraccount = receiveraccount;
-//			this.balance = balance;
-//			this.details = details;
-//			this.time = time;
-//		}
-
-	
 
 		public TransactionDetails() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
-
-
-
-
-
 
 		public Long getId() {
 			return id;
@@ -73,39 +55,51 @@ public class TransactionDetails {
 			this.userid = userid;
 		}
 
-		public int getAccountnumber() {
-			return accountnumber;
-		}
-
-		public void setAccountnumber(int accountnumber) {
-			this.accountnumber = accountnumber;
-		}
-
-		public int getReceiveraccount() {
-			return receiveraccount;
-		}
-
-		public void setReceiveraccount(int receiveraccount) {
-			this.receiveraccount = receiveraccount;
-		}
+		
 
 	
+
+		public int getSenderaccountnumber() {
+			return senderaccountnumber;
+		}
+
+
+
+
+
+
+		public void setSenderaccountnumber(int senderaccountnumber) {
+			this.senderaccountnumber = senderaccountnumber;
+		}
+
+
+
+
+
+
+		public int getReceiveraccountnumber() {
+			return receiveraccountnumber;
+		}
+
+
+
+
+
+
+		public void setReceiveraccountnumber(int receiveraccountnumber) {
+			this.receiveraccountnumber = receiveraccountnumber;
+		}
+
+
 
 		public int getAmount() {
 			return amount;
 		}
 
 
-
-
-
-
 		public void setAmount(int amount) {
 			this.amount = amount;
 		}
-
-
-
 
 
 

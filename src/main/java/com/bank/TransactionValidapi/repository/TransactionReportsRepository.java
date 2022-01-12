@@ -26,7 +26,7 @@ public interface TransactionReportsRepository extends JpaRepository <Transaction
 	Integer getaccountnumber(@Param("Anumber") int Anumber);
 	
 
-	@Query(value="select senderaccountnumber from accounts u where u.senderaccountnumber =:Bnumber", nativeQuery=true)
+	@Query(value="select receiveraccountnumber from accounts u where u.receiveraccountnumber =:Bnumber", nativeQuery=true)
 	Integer getreceiveraccountnumber(@Param("Bnumber") int Bnumber);
 	
 	@Query(value="select deposit from useraccounts u where u.accountnumber =:Cnumber", nativeQuery=true)
