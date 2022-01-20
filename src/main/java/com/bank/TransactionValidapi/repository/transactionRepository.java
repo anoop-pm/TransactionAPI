@@ -8,6 +8,6 @@ import com.bank.TransactionValidapi.entity.TransactionDetails;
 
 
 @Repository
-public interface transactionRepository  extends JpaRepository <TransactionDetails, Long>{
+public interface TransactionRepository  extends JpaRepository <TransactionDetails, Long>{
 
 }

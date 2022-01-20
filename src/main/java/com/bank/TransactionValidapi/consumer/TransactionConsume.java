@@ -5,12 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import com.bank.TransactionValidapi.config.ProducerConfigbanks;
+import com.bank.TransactionValidapi.constant.ValidConstant;
 import com.bank.TransactionValidapi.entity.MessageStatus;
 import com.bank.TransactionValidapi.entity.TransactionDetails;
 import com.bank.TransactionValidapi.entity.TransactionReport;
 import com.bank.TransactionValidapi.repository.MessageRepository;
 import com.bank.TransactionValidapi.repository.TransactionReportsRepository;
-import com.bank.TransactionValidapi.repository.transactionRepository;
+import com.bank.TransactionValidapi.repository.TransactionRepository;
+
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -32,10 +35,14 @@ public class TransactionConsume {
 	private MessageRepository messagerepo;
 
 	@Autowired
-	private transactionRepository tranreoistory;
+	private TransactionRepository tranreoistory;
+	
+	@Autowired
+	private ProducerConfigbanks producerss;
+	
 
 	// Consume Data
-	@KafkaListener(topics = "kafka-testing2")
+	@KafkaListener(topics = "banktwo")
 	public void consume(String message) {
 
 		JSONObject json = new JSONObject(message);
@@ -111,9 +118,9 @@ public class TransactionConsume {
 		if (validaccno == searchaccno && searchraccno == validraccno && samount >= validamount) {
 
 			sumamount = samount - validamount;
-			report = "Transfered";
+			report = ValidConstant.transfer;
 			status = "200";
-			messagess = "Transfered Successfully " + validamount + " :,Your Balance is :" + sumamount;
+			messagess = ValidConstant.transfer + validamount + ValidConstant.balance+ sumamount;
 
 			validrepo.updatebalance(sumamount, searchaccno);
 
@@ -125,7 +132,7 @@ public class TransactionConsume {
 
 			Instant now = Instant.now();
 
-			trans.setDetails("Debited");
+			trans.setDetails(ValidConstant.debit);
 
 			trans.setTime(now.toString());
 			trans.setUserid(getuserid);
@@ -134,24 +141,24 @@ public class TransactionConsume {
 
 		} else if (searchaccno == 0) {
 
-			report = "Not Transfered Sending Account Number not matched, ";
-			messagess = "Not Transfered Sending Account Number not matched, ";
-			status = "400";
+			report = ValidConstant.Erroraccount;
+			messagess = ValidConstant.Erroraccount;
+			status = ValidConstant.error;
 
 		}
 
 		else if (searchraccno == 0) {
 
-			report = "Not Transfered Receiver Account Number not matched";
-			messagess = "Not Transfered Receiver Account Number not matched";
-			status = "400";
+			report = ValidConstant.Errorrecaccount;
+			messagess = ValidConstant.Errorrecaccount;
+			status = ValidConstant.error;
 		}
 
 		else {
 
-			report = "Not enough Balance";
-			messagess = "Not enough Balance";
-			status = "400";
+			report = ValidConstant.notenoughbalance;
+			messagess = ValidConstant.notenoughbalance;
+			status = ValidConstant.error;
 
 		}
 		System.out.println("Message: " + report);
@@ -168,20 +175,8 @@ public class TransactionConsume {
 
 	public void transactionproducer(String sac, String rac, String message, String validamount) {
 
-		Properties properties = new Properties();
-
-		// kafka bootstrap server
-		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		// producer acks
-		properties.setProperty(ProducerConfig.ACKS_CONFIG, "all"); // strongest producing guarantee
-		properties.setProperty(ProducerConfig.RETRIES_CONFIG, "3");
-		properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, "1");
-		// leverage idempotent producer from Kafka 0.11 !
-		properties.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true"); // ensure we don't push duplicates
-
-		Producer<String, String> producer = new KafkaProducer<>(properties);
+		
+		Producer<String, String> producer = new KafkaProducer<>(producerss.kafkaproducer());
 
 		try {
 			producer.send(newRandomTransaction(sac, rac, message, validamount));
@@ -208,7 +203,24 @@ public class TransactionConsume {
 		transactionr.put("Report", report);
 		transactionr.put("Amountb", validamount);
 		transactionr.put("time", now.toString());
-		return new ProducerRecord<>("kafka-testing7", "1", transactionr.toString());
+		return new ProducerRecord<>("bankthree", "1", transactionr.toString());
 	}
 
+	public Properties KafkaProducer() {
+		
+		Properties properties = new Properties();
+
+		// kafka bootstrap server
+		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
+		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		// producer acks
+		properties.setProperty(ProducerConfig.ACKS_CONFIG, "all"); // strongest producing guarantee
+		properties.setProperty(ProducerConfig.RETRIES_CONFIG, "3");
+		properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, "1");
+		// leverage idempotent producer from Kafka 0.11 !
+		properties.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true"); // ensure we don't push duplicates
+
+		return properties;
+	}
 }
