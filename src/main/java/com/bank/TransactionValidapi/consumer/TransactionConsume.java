@@ -42,7 +42,13 @@ public class TransactionConsume {
 	
 
 	// Consume Data
-	@KafkaListener(topics = "banktwo")
+	/**Consume the Topic name = transactionstreaminput read the JSON Object Data 
+	 * {"AccountNumber":256421,"RAccountNumber":2000,"balance":600,"time":"2022-01-21T11:44:52.841Z"}
+	 * After that check all validation to possible to transfer the amount 
+	 * Validate Sender and Receiver Account Number
+	 * Validate amount can possible to transfer
+	 * */
+	@KafkaListener(topics = "transactionstreaminput")
 	public void consume(String message) {
 
 		JSONObject json = new JSONObject(message);
@@ -203,24 +209,6 @@ public class TransactionConsume {
 		transactionr.put("Report", report);
 		transactionr.put("Amountb", validamount);
 		transactionr.put("time", now.toString());
-		return new ProducerRecord<>("bankthree", "1", transactionr.toString());
-	}
-
-	public Properties KafkaProducer() {
-		
-		Properties properties = new Properties();
-
-		// kafka bootstrap server
-		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		// producer acks
-		properties.setProperty(ProducerConfig.ACKS_CONFIG, "all"); // strongest producing guarantee
-		properties.setProperty(ProducerConfig.RETRIES_CONFIG, "3");
-		properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, "1");
-		// leverage idempotent producer from Kafka 0.11 !
-		properties.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true"); // ensure we don't push duplicates
-
-		return properties;
+		return new ProducerRecord<>("transactionoutput", "1", transactionr.toString());
 	}
 }
